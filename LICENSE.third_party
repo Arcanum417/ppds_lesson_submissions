@@ -1,0 +1,44 @@
+This document licenses the use of third party code in this project. License and code provided by Mgr. Ing. Matúš Jókay, PhD.. This document is not grant any further license, just serves to document the license granted.
+
+Code licensed follows verbatim:
+from fei.ppds import Thread, Mutex
+
+
+class Shared():
+    def __init__(self, end):
+        self.counter = 0
+        self.end = end
+        self.array = [0] * self.end
+        self.mutex = Mutex()
+
+
+class Histogram(dict):
+    def __init__(self, seq=[]):
+        for item in seq:
+            self[item] = self.get(item, 0) + 1
+
+
+def counter(shared):
+    while True:
+        if shared.counter >= shared.end:
+            break
+        shared.array[shared.counter] += 1
+        shared.mutex.lock()
+        shared.counter += 1
+        shared.mutex.unlock()
+
+
+for _ in range(10):
+    sh = Shared(1_000_000)
+    t1 = Thread(counter, sh)
+    t2 = Thread(counter, sh)
+
+    t1.join()
+    t2.join()
+
+    print(Histogram(sh.array))
+    
+Licensed code ends here. License follows bellow.
+
+Jókay Matúš17/02/2021
+to moje riesenie nebolo dobre. bol to iba jeden z trivialnych navrhov. treba prepracovat funkciu counter(). zaklad programu bude urcite rovnaky, ale uvital by som, keby ste si ho sami napisali. urcite si napriklad viete histogram spravit tiez sami. okolo tohto prveho cvicenia nebudem robit nejaku velku vedu, aj ked pouzijete moj kod, ale nie je to cielom. v dalsich tyzdnoch ocakavam, ze si naprogramujete vlastne verzie. nie vsetko sa bude dat inak, nez budem ukazovat, ale zas nebudem akceptovat moje vlastne riesenia bez nejakej evidentnej snahy o vlastny prispevok
